@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+transformers
+torch
+Pillow
+deep-translator

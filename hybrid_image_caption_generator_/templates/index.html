@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Image Caption Generator</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #1d1d1d;
+            color: #f2f2f2;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .navbar-custom {
+            background: #090909;
+            border-bottom: 1px solid #c59b28;
+            min-height: 48px;
+        }
+
+        .brand {
+            color: #f2c94c !important;
+            font-weight: 700;
+        }
+
+        .brand-icon {
+            color: #f4a6c1;
+            margin-right: 4px;
+        }
+
+        .hero {
+            padding: 25px 20px 0px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 1.9rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 900px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 5px;
+        }
+
+        .upload-area {
+            max-width: 670px;
+            margin: 0 auto;
+        }
+
+        .form-control {
+            background: #222;
+            color: #eee;
+            border: 1px solid #b48c21;
+        }
+
+        .form-control:focus {
+            background: #222;
+            color: #fff;
+            border-color: #f0c84b;
+            box-shadow: 0 0 0 .15rem rgba(240, 200, 75, .2);
+        }
+
+        .btn-generate {
+            background: #159447;
+            border: none;
+            border-radius: 22px;
+            padding: 10px 20px;
+            color: white;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-generate:hover {
+            background: #1aaa52;
+            color: white;
+        }
+
+        .result-card {
+            max-width: 370px;
+            margin: 20px auto 40px;
+            padding: 16px 18px 20px;
+            background: #202020;
+            border: 1px solid #b38b1d;
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(200, 160, 40, .18);
+            text-align: center;
+        }
+
+        .result-card h6 {
+            font-size: .9rem;
+            margin: 3px 0 7px;
+        }
+
+        .uploaded-image {
+            max-width: 210px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #888;
+            margin-bottom: 7px;
+        }
+
+        .caption-title {
+            font-size: .95rem;
+            margin: 4px 0;
+        }
+
+        .caption-text {
+            font-size: .92rem;
+            margin: 4px 0 13px;
+        }
+
+        .action-btn {
+            border-radius: 18px;
+            font-size: .72rem;
+            padding: 6px 10px;
+            margin: 3px;
+        }
+
+        .language-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .translated-text {
+            min-height: 24px;
+            margin-top: 10px;
+            font-size: .85rem;
+            line-height: 1.5;
+        }
+
+        .login-btn {
+            font-size: .75rem;
+            padding: 4px 9px;
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 1.45rem;
+            }
+
+            .hero-image {
+                height: 210px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-dark navbar-custom px-3">
+    <div class="container-fluid">
+        <a class="navbar-brand brand" href="{{ url_for('index') }}">
+            <span class="brand-icon">☁</span> Caption AI
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button
+                    class="btn btn-sm btn-dark dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                >
+                    Services
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#">Image Captioning</a></li>
+                    <li><a class="dropdown-item" href="#">Speech Synthesis</a></li>
+                    <li><a class="dropdown-item" href="#">User History</a></li>
+                </ul>
+            </div>
+
+            <a href="#" class="btn btn-outline-light login-btn">Login</a>
+            <a href="#" class="btn btn-primary login-btn">Sign Up</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>🖼 Hybrid Image Caption Generator</h1>
+
+    <img
+        src="https://images.unsplash.com/photo-1549921296-3a6b69c7f3d5?fit=crop&w=900&q=80"
+        class="hero-image"
+        alt="AI Captioning Image"
+    >
+
+    <div class="upload-area">
+        <form
+            action="{{ url_for('upload') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+            <input
+                class="form-control"
+                type="file"
+                name="image"
+                accept=".jpg,.jpeg,.png,.webp"
+                required
+            >
+
+            <button class="btn btn-generate" type="submit">
+                <i class="fa-solid fa-pen"></i> Generate Caption
+            </button>
+        </form>
+    </div>
+</section>
+
+{% if filename %}
+<div class="result-card">
+    <h6><i class="fa-solid fa-image"></i> Uploaded Image:</h6>
+
+    <img
+        src="{{ url_for('static', filename='uploads/' + filename) }}"
+        class="uploaded-image"
+        alt="Uploaded image"
+    >
+
+    <div class="caption-title">
+        <i class="fa-solid fa-pen"></i> Caption:
+    </div>
+
+    <p id="captionText" class="caption-text">{{ caption }}</p>
+
+    <button
+        class="btn btn-warning action-btn"
+        onclick="speakText(document.getElementById('captionText').innerText, 'en-US')"
+    >
+        <i class="fa-solid fa-volume-high"></i> Read in English
+    </button>
+
+    <div class="language-row">
+        <button class="btn btn-outline-info action-btn" onclick="translateCaption('Telugu')">
+            <i class="fa-solid fa-language"></i> Translate to Telugu
+        </button>
+
+        <button class="btn btn-outline-warning action-btn" onclick="translateCaption('Hindi')">
+            <i class="fa-solid fa-language"></i> Translate to Hindi
+        </button>
+
+        <button class="btn btn-outline-danger action-btn" onclick="translateCaption('Tamil')">
+            <i class="fa-solid fa-language"></i> Translate to Tamil
+        </button>
+
+        <button class="btn btn-outline-primary action-btn" onclick="translateCaption('Kannada')">
+            <i class="fa-solid fa-language"></i> Translate to Kannada
+        </button>
+
+        <button class="btn btn-outline-success action-btn" onclick="translateCaption('Malayalam')">
+            <i class="fa-solid fa-language"></i> Translate to Malayalam
+        </button>
+    </div>
+
+    <div id="translatedText" class="translated-text"></div>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function speakText(text, language) {
+    const synth = window.speechSynthesis;
+
+    if (synth.speaking) {
+        synth.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = language;
+    utterance.rate = 1;
+    synth.speak(utterance);
+}
+
+async function translateCaption(language) {
+    const captionElement = document.getElementById("captionText");
+    const output = document.getElementById("translatedText");
+
+    if (!captionElement || !output) return;
+
+    output.innerText = "Translating...";
+
+    try {
+        const response = await fetch("/translate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                text: captionElement.innerText,
+                language: language
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            output.innerText = data.error || "Translation failed.";
+            return;
+        }
+
+        output.innerText = data.translation;
+
+        const speechCodes = {
+            Telugu: "te-IN",
+            Hindi: "hi-IN",
+            Tamil: "ta-IN",
+            Kannada: "kn-IN",
+            Malayalam: "ml-IN"
+        };
+
+        speakText(data.translation, speechCodes[language]);
+    } catch (error) {
+        output.innerText = "Translation failed. Please try again.";
+    }
+}
+</script>
+
+</body>
+</html>
